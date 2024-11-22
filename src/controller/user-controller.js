@@ -11,7 +11,7 @@ let users = [
 // * ************************************************
 // * Get all users controller
 // * ************************************************
-getAllUsers = (_, res) => {
+exports.getAllUsers = (_, res) => {
   res.status(200).json({
     message: "Found all users",
     data: users,
@@ -21,7 +21,7 @@ getAllUsers = (_, res) => {
 // * ************************************************
 // * Create a user controller
 // * ************************************************
-createUser = (req, res) => {
+exports.createUser = (req, res) => {
   const { name, age, address } = req.body;
   users.push({
     id: Date.now(),
@@ -37,7 +37,7 @@ createUser = (req, res) => {
 // * ************************************************
 // * Get user detail contoller
 // * ************************************************
-getUserDetails = (req, res) => {
+exports.getUserDetails = (req, res) => {
   const id = parseInt(req.params.id);
   const foundUser = users.find((user) => {
     return user.id === id;
@@ -56,7 +56,7 @@ getUserDetails = (req, res) => {
 // * ************************************************
 // * Update a user controller
 // * ************************************************
-updateUser = (req, res) => {
+exports.updateUser = (req, res) => {
   const id = parseInt(req.params.id);
   const { name, age, address } = req.body;
   const userIndex = users.findIndex((user) => {
@@ -84,7 +84,7 @@ updateUser = (req, res) => {
 // * ************************************************
 // * Delete a user contoller
 // * ************************************************
-deleteUser = (req, res) => {
+exports.deleteUser = (req, res) => {
   const id = parseInt(req.params.id);
   const foundUser = users.find((user) => user.id == id);
   if (foundUser) {
@@ -96,12 +96,4 @@ deleteUser = (req, res) => {
   res.status(400).json({
     message: `User not found with id: ${id}`,
   });
-};
-
-module.exports = {
-  getAllUsers,
-  createUser,
-  getUserDetails,
-  updateUser,
-  deleteUser,
 };
