@@ -4,7 +4,6 @@
 const express = require("express");
 const userController = require("../controller/user-controller");
 const authentication = require("../middleware/auth-middleware");
-const errorHandler = require("../middleware/error-handler-middleware");
 const router = express.Router();
 
 // * ************************************************
