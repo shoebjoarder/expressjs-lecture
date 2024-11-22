@@ -11,7 +11,7 @@ let users = [
 // * ************************************************
 // * Get all users controller
 // * ************************************************
-getAllUsers = (_, res) => {
+exports.getAllUsers = (_, res) => {
   res.status(200).json({
     message: "Found all users",
     data: users,
@@ -21,87 +21,101 @@ getAllUsers = (_, res) => {
 // * ************************************************
 // * Create a user controller
 // * ************************************************
-createUser = (req, res) => {
+exports.createUser = (req, res, next) => {
   const { name, age, address } = req.body;
-  users.push({
-    id: Date.now(),
-    name,
-    age,
-    address,
-  });
-  res.status(201).json({
-    message: `New user created: ${name}`,
-  });
+  try {
+    const foundUser = users.find((user) => {
+      return user.name === name;
+    });
+    if (foundUser) {
+      let error = new Error(`Name already taken!`);
+      error.status = 400;
+      throw error;
+    }
+    users.push({
+      id: Date.now(),
+      name,
+      age,
+      address,
+    });
+    return res.status(201).json({
+      message: `New user created: ${name}`,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // * ************************************************
 // * Get user detail contoller
 // * ************************************************
-getUserDetails = (req, res) => {
+exports.getUserDetails = (req, res, next) => {
   const id = parseInt(req.params.id);
-  const foundUser = users.find((user) => {
-    return user.id === id;
-  });
-  if (foundUser) {
+  try {
+    const foundUser = users.find((user) => {
+      return user.id === id;
+    });
+    if (!foundUser) {
+      let error = new Error(`User not found with id: ${id}`);
+      error.status = 400;
+      throw error;
+    }
     return res.status(200).json({
       message: "User found",
       data: foundUser,
     });
+  } catch (error) {
+    next(error);
   }
-  res.status(400).json({
-    message: `User not found with id: ${id}`,
-  });
 };
 
 // * ************************************************
 // * Update a user controller
 // * ************************************************
-updateUser = (req, res) => {
+exports.updateUser = (req, res, next) => {
   const id = parseInt(req.params.id);
   const { name, age, address } = req.body;
-  const userIndex = users.findIndex((user) => {
-    return user.id === id;
-  });
-
-  if (userIndex === -1) {
-    return res.status(404).json({
-      message: `User not found with id: ${id}`,
+  try {
+    const userIndex = users.findIndex((user) => {
+      return user.id === id;
     });
+    if (userIndex === -1) {
+      let error = new Error(`User not found with id: ${id}`);
+      error.status = 400;
+      throw error;
+    }
+    users[userIndex] = {
+      ...users[userIndex],
+      ...(name && { name }),
+      ...(age && { age }),
+      ...(address && { address }),
+    };
+
+    res.status(200).json({
+      message: `User updated with id: ${id}`,
+    });
+  } catch (error) {
+    next(error);
   }
-
-  users[userIndex] = {
-    ...users[userIndex],
-    ...(name && { name }),
-    ...(age && { age }),
-    ...(address && { address }),
-  };
-
-  res.status(200).json({
-    message: `User updated with id: ${id}`,
-  });
 };
 
 // * ************************************************
 // * Delete a user contoller
 // * ************************************************
-deleteUser = (req, res) => {
+exports.deleteUser = (req, res, next) => {
   const id = parseInt(req.params.id);
-  const foundUser = users.find((user) => user.id == id);
-  if (foundUser) {
+  try {
+    const foundUser = users.find((user) => user.id == id);
+    if (!foundUser) {
+      let error = new Error(`User not found with id: ${id}`);
+      error.status = 400;
+      throw error;
+    }
     users = users.filter((user) => user.id !== id);
     return res.status(200).json({
       message: `User deleted with id: ${id}`,
     });
+  } catch (error) {
+    next(error);
   }
-  res.status(400).json({
-    message: `User not found with id: ${id}`,
-  });
-};
-
-module.exports = {
-  getAllUsers,
-  createUser,
-  getUserDetails,
-  updateUser,
-  deleteUser,
 };
