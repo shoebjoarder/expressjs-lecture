@@ -17,19 +17,30 @@ router.get("/", userController.getAllUsers);
 // * ************************************************
 router.post("/create", userController.createUser, errorHandler);
 
+// * Uncomment line below and comment line above in case for global error handler
+// router.post("/create", userController.createUser);
+
 // * ************************************************
 // * Get user details route
 // * ************************************************
 router.get("/:id", authentication, userController.getUserDetails, errorHandler);
+
+// * Uncomment line below and comment line above in case for global error handler
+router.get("/:id", authentication, userController.getUserDetails);
 
 // * ************************************************
 // * Update a user route
 // * ************************************************
 router.put("/:id", authentication, userController.updateUser, errorHandler);
 
+// * Uncomment line below and comment line above in case for global error handler
+// router.put("/:id", authentication, userController.updateUser);
 // * ************************************************
 // * Delete a user route
 // * ************************************************
 router.delete("/:id", authentication, userController.deleteUser, errorHandler);
+
+// * Uncomment line below and comment line above in case for global error handler
+// router.delete("/:id", authentication, userController.deleteUser);
 
 module.exports = router;
