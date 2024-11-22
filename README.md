@@ -39,7 +39,7 @@ Download and install the following software:
   npm ci
   ```
   - If you get an error, try typing the `npm install` or `npm install --force` command.
-- Install `nodemon` globally
+- Install `nodemon` globally. Run the command only once, in case if it is not installed.
   ```
   npm i -g nodemon
   ```
