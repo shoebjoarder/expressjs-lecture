@@ -1,4 +1,4 @@
-# Express.js Hands-on
+# Express.js Lecture
 
 ## 🚀 Get Started
 
