@@ -1,11 +1,12 @@
 const User = require("../models/user-model");
+const Address = require("../models/address-model");
 
 // * ************************************************
 // * Get all users controller
 // * ************************************************
 exports.getAllUsers = async (_, res, next) => {
   try {
-    const foundUsers = await User.find();
+    const foundUsers = await User.find().populate("address");
 
     return res.status(200).json({
       message: "Found users!",
@@ -37,10 +38,12 @@ exports.createUser = async (req, res, next) => {
       error.status = 400;
       throw error;
     }
-    const newUser = new User({
+    const newAddress = await new Address(address).save();
+
+    const newUser = await new User({
       name,
       age,
-      address,
+      address: newAddress["_id"],
     }).save();
 
     return res.status(201).json({
@@ -60,7 +63,7 @@ exports.createUser = async (req, res, next) => {
 exports.getUserDetails = async (req, res, next) => {
   const id = req.params.id;
   try {
-    const foundUser = await User.findById(id);
+    const foundUser = await User.findById(id).populate("address");
     if (!foundUser) {
       let error = new Error(`User not found with id: ${id}`);
       error.status = 400;
@@ -82,16 +85,23 @@ exports.updateUser = async (req, res, next) => {
   const id = req.params.id;
   const { name, age, address } = req.body;
   try {
-    const updatedUser = await User.findByIdAndUpdate(id, {
-      name,
-      age,
-      address,
-    });
+    const updatedUser = await User.findById(id).populate("address");
+
     if (!updatedUser) {
       let error = new Error(`User not found with id: ${id}`);
       error.status = 400;
       throw error;
     }
+
+    updatedUser.name = name;
+    updatedUser.age = age;
+    updatedUser.address.street = address.street;
+    updatedUser.address.city = address.city;
+    updatedUser.address.zipCode = address.zipCode;
+
+    await updatedUser.address.save();
+    await updatedUser.save();
+
     return res.status(200).json({
       message: `User updated with id: ${updatedUser["_id"]}`,
     });
@@ -106,12 +116,15 @@ exports.updateUser = async (req, res, next) => {
 exports.deleteUser = async (req, res, next) => {
   const id = req.params.id;
   try {
-    const foundUser = await User.findByIdAndDelete(id);
+    const foundUser = await User.findById(id).populate("address");
     if (!foundUser) {
       let error = new Error(`User not found with id: ${id}`);
       error.status = 400;
       throw error;
     }
+
+    await Address.findByIdAndDelete(foundUser.address._id);
+    await User.findByIdAndDelete(id);
 
     return res.status(200).json({
       message: `User deleted with id: ${id}`,
