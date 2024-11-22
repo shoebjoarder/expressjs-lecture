@@ -39,6 +39,10 @@ Download and install the following software:
   npm ci
   ```
   - If you get an error, try typing the `npm install` or `npm install --force` command.
+- Install `nodemon` globally
+  ```
+  npm i -g nodemon
+  ```
 - Run the following command in the terminal to start the server.
   ```bash
   npm run app
