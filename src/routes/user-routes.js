@@ -26,7 +26,7 @@ router.post("/create", userController.createUser, errorHandler);
 router.get("/:id", authentication, userController.getUserDetails, errorHandler);
 
 // * Uncomment line below and comment line above in case for global error handler
-router.get("/:id", authentication, userController.getUserDetails);
+// router.get("/:id", authentication, userController.getUserDetails);
 
 // * ************************************************
 // * Update a user route
@@ -35,6 +35,7 @@ router.put("/:id", authentication, userController.updateUser, errorHandler);
 
 // * Uncomment line below and comment line above in case for global error handler
 // router.put("/:id", authentication, userController.updateUser);
+
 // * ************************************************
 // * Delete a user route
 // * ************************************************
