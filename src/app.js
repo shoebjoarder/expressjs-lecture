@@ -18,10 +18,7 @@ app.get("/", (_, res) => {
 
 app.use("/users", router);
 
-// * Uncomment line below to allow global error handler.
-// * Make sure to remove the error handlers associated to routes
-// * in user-route.js
-// app.use(errorHandler)
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
