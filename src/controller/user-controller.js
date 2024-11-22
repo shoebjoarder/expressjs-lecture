@@ -1,49 +1,58 @@
-// *  User data
-let users = [
-  {
-    id: Date.now(),
-    name: "John",
-    age: 36,
-    address: { street: "Lotherstraße", zipCode: 47057, city: "Duisburg" },
-  },
-];
+const { ObjectId } = require("mongodb");
 
 // * ************************************************
 // * Get all users controller
 // * ************************************************
-exports.getAllUsers = (_, res) => {
-  res.status(200).json({
-    message: "Found all users",
-    data: users,
-  });
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const db = req.app.locals.db;
+    const usersCollection = db.collection("users");
+
+    const foundUsers = await usersCollection.find().toArray();
+
+    return res.status(200).json({
+      message: "Found users!",
+      data: foundUsers,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
-exports.renderAllUsersPage = (_, res) => {
-  res.render("all-users", { title: "All users", users });
+exports.renderAllUsersPage = async (req, res) => {
+  try {
+    const db = req.app.locals.db;
+    const usersCollection = db.collection("users");
+
+    const users = await usersCollection.find().toArray();
+
+    res.render("all-users", { title: "All users", users });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // * ************************************************
 // * Create a user controller
 // * ************************************************
-exports.createUser = (req, res, next) => {
+exports.createUser = async (req, res, next) => {
   const { name, age, address } = req.body;
   try {
-    const foundUser = users.find((user) => {
-      return user.name === name;
-    });
+    const db = req.app.locals.db;
+    const usersCollection = db.collection("users");
+
+    const foundUser = await usersCollection.findOne({ name });
     if (foundUser) {
       let error = new Error(`Name already taken!`);
       error.status = 400;
       throw error;
     }
-    users.push({
-      id: Date.now(),
-      name,
-      age,
-      address,
-    });
+    const newUser = await usersCollection.insertOne({ name, age, address });
     return res.status(201).json({
       message: `New user created: ${name}`,
+      data: {
+        userId: newUser.insertedId,
+      },
     });
   } catch (error) {
     next(error);
@@ -53,12 +62,13 @@ exports.createUser = (req, res, next) => {
 // * ************************************************
 // * Get user detail contoller
 // * ************************************************
-exports.getUserDetails = (req, res, next) => {
-  const id = parseInt(req.params.id);
+exports.getUserDetails = async (req, res, next) => {
+  const id = req.params.id;
   try {
-    const foundUser = users.find((user) => {
-      return user.id === id;
-    });
+    const db = req.app.locals.db;
+    const usersCollection = db.collection("users");
+
+    const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
     if (!foundUser) {
       let error = new Error(`User not found with id: ${id}`);
       error.status = 400;
@@ -76,26 +86,25 @@ exports.getUserDetails = (req, res, next) => {
 // * ************************************************
 // * Update a user controller
 // * ************************************************
-exports.updateUser = (req, res, next) => {
-  const id = parseInt(req.params.id);
+exports.updateUser = async (req, res, next) => {
+  const id = req.params.id;
   const { name, age, address } = req.body;
   try {
-    const userIndex = users.findIndex((user) => {
-      return user.id === id;
-    });
-    if (userIndex === -1) {
+    const db = req.app.locals.db;
+    const usersCollection = db.collection("users");
+
+    const updatedUser = await usersCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { name, age, address } }
+    );
+
+    if (updatedUser.matchedCount === 0) {
       let error = new Error(`User not found with id: ${id}`);
       error.status = 400;
       throw error;
     }
-    users[userIndex] = {
-      ...users[userIndex],
-      ...(name && { name }),
-      ...(age && { age }),
-      ...(address && { address }),
-    };
 
-    res.status(200).json({
+    return res.status(200).json({
       message: `User updated with id: ${id}`,
     });
   } catch (error) {
@@ -106,16 +115,22 @@ exports.updateUser = (req, res, next) => {
 // * ************************************************
 // * Delete a user contoller
 // * ************************************************
-exports.deleteUser = (req, res, next) => {
-  const id = parseInt(req.params.id);
+exports.deleteUser = async (req, res, next) => {
+  const id = req.params.id;
   try {
-    const foundUser = users.find((user) => user.id == id);
-    if (!foundUser) {
+    const db = req.app.locals.db;
+    const usersCollection = db.collection("users");
+
+    const result = await usersCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
+
+    if (result.deletedCount === 0) {
       let error = new Error(`User not found with id: ${id}`);
       error.status = 400;
       throw error;
     }
-    users = users.filter((user) => user.id !== id);
+
     return res.status(200).json({
       message: `User deleted with id: ${id}`,
     });
