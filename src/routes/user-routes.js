@@ -2,7 +2,7 @@
 // *  Routing using Express Router
 // * ************************************************
 const express = require("express");
-const userController = require("../controller/user-controller");
+const userController = require("../controllers/user-controller");
 const authentication = require("../middleware/auth-middleware");
 const router = express.Router();
 
