@@ -30,12 +30,16 @@ Download and install the following software:
 
 - Open the project using a code editor.
 - In VSCode, click the `Terminal` menu from the top menu and click `New Terminal`.
+- Switch between branches to view the different topics. Type `git checkout <branch_name>` in the terminal to switch between the branches. Remember to replace `<branch_name>` with the actual branch name, e.g.,
+  ```bash
+  git checkout 1-basic-routing
+  ```
 - Open the terminal and type the following command to install the node packages.
-	```bash
-	npm ci
-	```
-	- If you get an error, try typing the `npm install` or `npm install --force` command.
+  ```bash
+  npm ci
+  ```
+  - If you get an error, try typing the `npm install` or `npm install --force` command.
 - Run the following command in the terminal to start the server.
-	```bash
-	npm run app
-	```
+  ```bash
+  npm run app
+  ```
