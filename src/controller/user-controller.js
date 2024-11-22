@@ -18,6 +18,10 @@ exports.getAllUsers = (_, res) => {
   });
 };
 
+exports.renderAllUsersPage = (_, res) => {
+  res.render("all-users", { title: "All users", users });
+};
+
 // * ************************************************
 // * Create a user controller
 // * ************************************************

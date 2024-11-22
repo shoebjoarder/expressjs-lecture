@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Express.js Lecture</title>
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+        .container {
+            min-height: 87vh;
+        }
+    </style>
+  </head>
+  <body>
+    <%- include('partials/navbar') %>
+    <div class="container">
+        <div class="row mt-5 justify-content-start">
+            <div class="col-md-10">
+                
+                <h1><%= title %></h1>
+
+                <p>For loop</p>
+                <ul>
+                    <% if (users) { %>
+                        <% for (let i = 0; i < users.length; i++) { %>
+                            <li><%= users[i].name %></li>
+                        <% } %>
+                    <% } else { %>
+                            <p>No users found</p>
+                    <% } %>
+                </ul>
+
+                <p>forEach method</p>
+                <ul>
+                    <% if (users) { %>
+                        <% users.forEach(item => { %>
+                            <li><%= item.name %></li>
+                        <% }) %>
+                    <% } else { %>
+                        <p>No users found</p>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>

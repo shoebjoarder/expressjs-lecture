@@ -10,7 +10,11 @@ const router = express.Router();
 // * ************************************************
 // * Get all users route
 // * ************************************************
+// * Get all users API
 router.get("/", userController.getAllUsers);
+
+// * Render list of all users page
+router.get("/render-all-users", userController.renderAllUsersPage);
 
 // * ************************************************
 // * Create a new user route
